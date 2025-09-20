@@ -1,5 +1,5 @@
 "use server";
 
-export default function AdminPage() {
+export default async function AdminPage() {
   return "Admin Page";
 }

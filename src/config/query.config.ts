@@ -1,46 +1,48 @@
-import { APIBaseResponse, IValidationError } from '@/interfaces/api.interface'
-import { IApiError } from '@/interfaces/error.interface'
-import { renderErr } from '@/utils/error.util'
-import { isServer, QueryClient } from '@tanstack/react-query'
-import toast from 'react-hot-toast'
+import { APIBaseResponse, IValidationError } from "@/interfaces/api.interface";
+import { IApiError } from "@/interfaces/error.interface";
+
+import { isServer, QueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 let browserQueryClient = new QueryClient({
   defaultOptions: {
     mutations: {
-      onSuccess: data => {
-        const res = data as APIBaseResponse
+      onSuccess: (data) => {
+        const res = data as APIBaseResponse;
 
-        if ('error' in res && res.error !== null) {
-          const resErr = res as IApiError
-          if (resErr.error.message.includes('Validation error'))
-            return toast.error((resErr.error.data as IValidationError[])[0].message ?? '')
+        if ("error" in res && res.error !== null) {
+          const resErr = res as IApiError;
+          if (resErr.error.message.includes("Validation error"))
+            return toast.error(
+              (resErr.error.data as IValidationError[])[0].message ?? ""
+            );
 
-          return toast.error(renderErr(resErr.error.message))
+          return toast.error(resErr.error.message);
         }
 
-        if (typeof res?.data === 'string') {
-          return res
+        if (typeof res?.data === "string") {
+          return res;
         }
 
         if (!res.status) {
-          return toast.error(renderErr(res.message))
+          return toast.error(res.message);
         }
       },
     },
     queries: {
-      select: data => {
-        const res = data as APIBaseResponse
+      select: (data) => {
+        const res = data as APIBaseResponse;
 
-        if (typeof res === 'string') return res
-        if (typeof res === 'object' && res?.status === undefined) return res
-        if (!res?.status) return undefined
-        return res
+        if (typeof res === "string") return res;
+        if (typeof res === "object" && res?.status === undefined) return res;
+        if (!res?.status) return undefined;
+        return res;
       },
       refetchOnWindowFocus: false,
       retry: false,
     },
   },
-})
+});
 
 const makeQueryClient = () => {
   return new QueryClient({
@@ -51,14 +53,14 @@ const makeQueryClient = () => {
         retry: false,
       },
     },
-  })
-}
+  });
+};
 
 export const getQueryClient = () => {
   if (isServer) {
-    return makeQueryClient()
+    return makeQueryClient();
   } else {
-    if (!browserQueryClient) browserQueryClient = makeQueryClient()
-    return browserQueryClient
+    if (!browserQueryClient) browserQueryClient = makeQueryClient();
+    return browserQueryClient;
   }
-}
+};
