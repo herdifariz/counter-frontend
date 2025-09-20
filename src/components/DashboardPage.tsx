@@ -55,7 +55,7 @@ const DashboardPage = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-yellow-800 text-sm font-medium">Menunggu</p>
-                <h3 className="text-3xl font-bold text-yellow-900 mt-1">8</h3>
+                <h3 className="text-3xl font-bold text-yellow-900 mt-1">999</h3>
               </div>
               <span className="material-symbols-outlined text-yellow-500 text-3xl">
                 timer

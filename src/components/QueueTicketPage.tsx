@@ -1,15 +1,15 @@
 "use client";
 
 import React, { FC, useState } from "react";
-import Button from "../atoms/Button";
-import Card from "../atoms/Card";
+import Button from "./atoms/Button";
+import Card from "./atoms/Card";
 
 interface QueueTicketProps {
   className?: string;
 }
 
 const QueueTicketPage: FC<QueueTicketProps> = ({ className }) => {
-  const [isClaimSuccess, setIsClaimSuccess] = useState(false);
+  const [isClaimSuccess] = useState(false);
 
   return (
     <Card className={className}>
