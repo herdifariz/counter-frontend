@@ -9,28 +9,28 @@ const DashboardPage = () => {
       description: "Ambil nomor antrian untuk dilayani",
       href: "/queue-ticket",
       icon: "confirmation_number",
-      color: "bg-blue-500",
+      color: "!bg-blue-500",
     },
     {
       title: "Display Antrian",
       description: "Lihat display antrian yang sedang dilayani",
       href: "/queue-display",
       icon: "list",
-      color: "bg-purple-500",
+      color: "!bg-purple-500",
     },
     {
       title: "Cek Status Antrian",
       description: "Cek status nomor antrian Anda",
       href: "/queue-status",
       icon: "search",
-      color: "bg-green-500",
+      color: "!bg-green-500",
     },
     {
       title: "Operator Counter",
       description: "Panel untuk operator counter",
       href: "/counter-operator",
       icon: "person",
-      color: "bg-amber-500",
+      color: "!bg-amber-500",
     },
   ];
   return (
@@ -50,7 +50,7 @@ const DashboardPage = () => {
           Statistik Antrian Hari Ini
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="bg-yellow-50 border-yellow-200">
+          <Card className="!bg-yellow-50 !border-yellow-200">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-yellow-800 text-sm font-medium">Menunggu</p>
@@ -62,7 +62,7 @@ const DashboardPage = () => {
             </div>
           </Card>
 
-          <Card className="bg-blue-50 border-blue-200">
+          <Card className="!bg-blue-50 !border-blue-200">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-blue-800 text-sm font-medium">
@@ -76,7 +76,7 @@ const DashboardPage = () => {
             </div>
           </Card>
 
-          <Card className="bg-green-50 border-green-200">
+          <Card className="!bg-green-50 !border-green-200">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-green-800 text-sm font-medium">Selesai</p>
@@ -88,7 +88,7 @@ const DashboardPage = () => {
             </div>
           </Card>
 
-          <Card className="bg-red-50 border-red-200">
+          <Card className="!bg-red-50 !border-red-200">
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-red-800 text-sm font-medium">Dilewati</p>

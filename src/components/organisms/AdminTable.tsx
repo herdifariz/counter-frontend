@@ -1,6 +1,10 @@
 "use client";
 import Button from "@/components/atoms/Button";
 import { IAdmin } from "@/interfaces/services/auth.interface";
+import {
+  useDeleteAdmin,
+  useToggleAdminStatus,
+} from "@/services/auth/wrapper.service";
 import { format } from "date-fns";
 import React, { useState } from "react";
 
@@ -17,9 +21,35 @@ export default function AdminTable({
 }: AdminTableProps) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
-  const handleToggleStatus = async (id: number) => {};
+  const toggleStatus = useToggleAdminStatus();
+  const deleteAdmin = useDeleteAdmin();
 
-  const handleDelete = async (id: number) => {};
+  const handleToggleStatus = async (id: number) => {
+    toggleStatus.mutate(
+      { id: id },
+      {
+        onSuccess: (res) => {
+          if (res.error) {
+            return;
+          }
+          onRefresh();
+        },
+      }
+    );
+  };
+
+  const handleDelete = async (id: number) => {
+    deleteAdmin.mutate(id, {
+      onSuccess: (res) => {
+        if (res.error) {
+          // Handle error (e.g., show a toast notification)
+          return;
+        }
+
+        onRefresh();
+      },
+    });
+  };
 
   const toggleExpand = (id: number) => {
     setExpandedId(expandedId === id ? null : id);

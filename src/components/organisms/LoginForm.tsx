@@ -2,13 +2,39 @@
 import Button from "@/components/atoms/Button";
 import Card from "@/components/atoms/Card";
 import Input from "@/components/atoms/Input";
-import { ILoginSchema } from "@/schemas/auth.schema";
+import { ILoginSchema, VLoginSchema } from "@/schemas/auth.schema";
+import { useLoginUser } from "@/services/auth/wrapper.service";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { mutate, isPending } = useLoginUser();
 
-  const onSubmit = (data: ILoginSchema) => {};
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ILoginSchema>({
+    resolver: yupResolver(VLoginSchema),
+    mode: "onChange",
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = (data: ILoginSchema) => {
+    mutate(data, {
+      onSuccess: (res) => {
+        if (res.status === true) {
+          router.push("/admin");
+        }
+      },
+    });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
@@ -20,12 +46,20 @@ export default function LoginForm() {
           <p className="text-gray-600 mt-1">Login untuk akses fitur admin</p>
         </div>
 
-        <form className="space-y-4">
-          <Input label="Username" placeholder="Masukkan username" fullWidth />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <Input
+            {...register("username")}
+            label="Username"
+            placeholder="Masukkan username"
+            error={errors.username?.message}
+            fullWidth
+          />
 
           <Input
+            {...register("password")}
             label="Password"
             placeholder="Masukkan password"
+            error={errors.password?.message}
             type="password"
             fullWidth
           />
@@ -33,8 +67,8 @@ export default function LoginForm() {
           <Button
             type="submit"
             fullWidth
-            isLoading={false}
-            disabled={false}
+            isLoading={isPending}
+            disabled={isPending}
             leftIcon={<span className="material-symbols-outlined">login</span>}
           >
             Login
