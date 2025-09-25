@@ -5,10 +5,18 @@ import {
   ICreateAdminRequest,
   IUpdateAdminRequest,
 } from "@/interfaces/services/auth.interface";
-import { VUpdateAdminSchema } from "@/schemas/auth.schema";
+import {
+  ICreateAdminSchema,
+  VCreateAdminSchema,
+  VUpdateAdminSchema,
+} from "@/schemas/auth.schema";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import Input from "../atoms/Input";
+import {
+  useCreateAdmin,
+  useUpdateAdmin,
+} from "@/services/auth/wrapper.service";
 
 interface AdminFormModalProps {
   isOpen: boolean;
@@ -27,9 +35,23 @@ const CreateAdminForm = ({
   isPending: boolean;
   onCancel: () => void;
 }) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ICreateAdminSchema>({
+    resolver: yupResolver(VCreateAdminSchema),
+    defaultValues: {
+      email: "",
+      name: "",
+      username: "",
+      password: "",
+    },
+  });
+
   return (
     <div>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="mb-4">
           <label
             htmlFor="username"
@@ -38,8 +60,10 @@ const CreateAdminForm = ({
             Username
           </label>
           <Input
+            {...register("username")}
             type="text"
             id="username"
+            error={errors.username?.message}
             fullWidth
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
@@ -53,7 +77,9 @@ const CreateAdminForm = ({
             Email
           </label>
           <Input
+            {...register("email")}
             type="email"
+            error={errors.email?.message}
             id="email"
             fullWidth
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -68,8 +94,10 @@ const CreateAdminForm = ({
             Name
           </label>
           <Input
+            {...register("name")}
             type="text"
             id="name"
+            error={errors.name?.message}
             fullWidth
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
@@ -83,7 +111,9 @@ const CreateAdminForm = ({
             Password
           </label>
           <Input
+            {...register("password")}
             type="password"
+            error={errors.password?.message}
             id="password"
             fullWidth
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -264,9 +294,22 @@ export default function AdminFormModal({
   mode,
   onSuccess,
 }: AdminFormModalProps) {
-  const handleCreateSubmit = async (data: ICreateAdminRequest) => {};
+  const { mutateAsync: createAdmin } = useCreateAdmin();
+  const { mutateAsync: updateAdmin } = useUpdateAdmin();
 
-  const handleUpdateSubmit = async (data: IUpdateAdminRequest) => {};
+  const handleCreateSubmit = async (data: ICreateAdminRequest) => {
+    try {
+      await createAdmin(data);
+      onSuccess();
+    } catch {}
+  };
+
+  const handleUpdateSubmit = async (data: IUpdateAdminRequest) => {
+    try {
+      await updateAdmin(data);
+      onSuccess();
+    } catch {}
+  };
 
   if (!isOpen) return null;
 

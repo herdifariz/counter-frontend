@@ -1,7 +1,10 @@
 import * as yup from "yup";
 
 export const VLoginSchema = yup.object().shape({
-  username: yup.string().required("Username wajib diisi"),
+  username: yup
+    .string()
+    .required("Username wajib diisi")
+    .max(50, "Maksimal 50 karakter"),
   password: yup
     .string()
     .required("Password wajib diisi")

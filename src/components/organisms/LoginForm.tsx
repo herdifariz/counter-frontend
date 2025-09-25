@@ -6,23 +6,31 @@ import { ILoginSchema, VLoginSchema } from "@/schemas/auth.schema";
 import { useLoginUser } from "@/services/auth/wrapper.service";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function LoginForm() {
   const router = useRouter();
   const { mutate, isPending } = useLoginUser();
 
-  const { register, handleSubmit, formState } = useForm<ILoginSchema>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ILoginSchema>({
     resolver: yupResolver(VLoginSchema),
     mode: "onChange",
-    defaultValues: { username: "", password: "" },
+    defaultValues: {
+      username: "",
+      password: "",
+    },
   });
 
   const onSubmit = (data: ILoginSchema) => {
     mutate(data, {
       onSuccess: (res) => {
-        if (res && res.status === true) {
-          router.push("/");
+        if (res.status === true) {
+          router.push("/admin");
         }
       },
     });
@@ -38,17 +46,12 @@ export default function LoginForm() {
           <p className="text-gray-600 mt-1">Login untuk akses fitur admin</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit(onSubmit, (val) => {
-            console.log("error", val);
-          })}
-          className="space-y-4"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <Input
             {...register("username")}
             label="Username"
             placeholder="Masukkan username"
-            error={formState.errors.username?.message}
+            error={errors.username?.message}
             fullWidth
           />
 
@@ -56,16 +59,16 @@ export default function LoginForm() {
             {...register("password")}
             label="Password"
             placeholder="Masukkan password"
+            error={errors.password?.message}
             type="password"
-            error={formState.errors.password?.message}
             fullWidth
           />
 
           <Button
             type="submit"
             fullWidth
-            isLoading={false}
-            disabled={false}
+            isLoading={isPending}
+            disabled={isPending}
             leftIcon={<span className="material-symbols-outlined">login</span>}
           >
             Login

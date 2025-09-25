@@ -1,5 +1,4 @@
 "use server";
-
 import { tokenInterceptor } from "@/services/auth/api.service";
 import axios from "axios";
 import { cookies } from "next/headers";
@@ -8,7 +7,7 @@ import { env } from "./env.config";
 export const satellite = axios.create({
   baseURL: env.APP.API_URL,
   headers: {
-    APIKey: env.APP.API_KEY || "",
+    APIKey: env.APP.API_KEY,
   },
 });
 
@@ -22,7 +21,7 @@ satellite.interceptors.request.use(
         request.headers.Authorization = `Bearer ${token || ""}`;
       }
     } catch (error) {
-      console.error("Error in request interceptor:", error);
+      return Promise.reject(error);
     }
 
     return request;
