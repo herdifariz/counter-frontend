@@ -1,3 +1,5 @@
+"use server";
+
 import { tokenInterceptor } from "@/services/auth/api.service";
 import axios from "axios";
 import { cookies } from "next/headers";

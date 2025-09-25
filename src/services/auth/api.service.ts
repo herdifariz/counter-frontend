@@ -1,3 +1,5 @@
+"use server";
+
 import { cookies } from "next/headers";
 import { RedirectType, redirect } from "next/navigation";
 import { AxiosError } from "axios";
