@@ -4,11 +4,17 @@ import {
   ICreateCounterRequest,
   IUpdateCounterRequest,
 } from "@/interfaces/services/counter.interface";
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import Button from "../atoms/Button";
 import Card from "../atoms/Card";
 import CounterCard from "../molecules/CounterCard";
 import CounterForm from "../molecules/CounterForm";
+import {
+  useCreateCounter,
+  useGetAllCounters,
+  useUpdateCounter,
+} from "@/services/counter/wrapper.service";
+import { log } from "node:console";
 
 interface CounterManagerProps {
   className?: string;
@@ -19,15 +25,53 @@ const CounterManager: React.FC<CounterManagerProps> = ({ className }) => {
   const [editingCounter, setEditingCounter] = useState<ICounter | null>(null);
   const [selectedCounter, setSelectedCounter] = useState<ICounter | null>(null);
 
-  const counters: ICounter[] = [];
+  const { mutateAsync: createCounter } = useCreateCounter();
+  const { mutateAsync: updateCounter } = useUpdateCounter();
+  // const counterList: ICounter[] = [];
+  const {
+    data: counterList,
+    isLoading,
+    refetch: refetchCounter,
+  } = useGetAllCounters();
 
   const handleSubmit = (
     data: ICreateCounterRequest | IUpdateCounterRequest
-  ) => {};
+  ) => {
+    console.log("handleSubmit called with data:", data);
+    if (!editingCounter) {
+      console.log("Create counter:", data);
+      createCounter(data, {
+        onSuccess: () => {
+          setIsAddingCounter(false);
+          refetchCounter();
+        },
+      });
+    } else {
+      updateCounter(
+        { ...(data as IUpdateCounterRequest), id: editingCounter.id },
+        {
+          onSuccess: () => {
+            setEditingCounter(null);
+            setSelectedCounter(null);
+            refetchCounter();
+          },
+        }
+      );
+    }
+  };
 
-  const handleCounterClick = (counter: ICounter) => {};
+  const handleCounterClick = (counter: ICounter) => {
+    setSelectedCounter(counter);
+    console.log("Selected counter:", counter);
+  };
 
-  const handleEditCounter = () => {};
+  const handleEditCounter = () => {
+    if (selectedCounter) {
+      setEditingCounter(selectedCounter);
+      setIsAddingCounter(false);
+      console.log("Edit counter:", selectedCounter);
+    }
+  };
 
   const handleDeleteCounter = () => {};
 
@@ -101,9 +145,9 @@ const CounterManager: React.FC<CounterManagerProps> = ({ className }) => {
             </div>
           )}
 
-          {counters.length > 0 ? (
+          {counterList?.data && counterList.data.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {counters.map((counter) => (
+              {counterList.data.map((counter) => (
                 <CounterCard
                   key={counter.id}
                   counter={counter}
@@ -114,8 +158,8 @@ const CounterManager: React.FC<CounterManagerProps> = ({ className }) => {
             </div>
           ) : (
             <Card variant="outline" className="text-center py-8 text-gray-500">
-              Belum ada counter. Klik 'Tambah Counter' untuk membuat counter
-              baru.
+              Belum ada counter. Klik &apos;Tambah Counter&apos; untuk membuat
+              counter baru.
             </Card>
           )}
         </>

@@ -1,7 +1,9 @@
+"use client";
 import React from "react";
 import Card from "../atoms/Card";
 import { ICurrentQueuesResponse } from "@/interfaces/services/queue.interface";
 import CurrentQueueDisplay from "../molecules/CurrentQueueDisplay";
+import { useGetCurrentQueues } from "@/services/queue/wrapper.service";
 
 interface QueueDisplayBoardProps {
   className?: string;
@@ -39,6 +41,12 @@ const counters: ICurrentQueuesResponse[] = [
 ];
 
 const QueueDisplayPage: React.FC<QueueDisplayBoardProps> = ({ className }) => {
+  const { data, isLoading, isError } = useGetCurrentQueues();
+  const counters = Array.isArray(data)
+    ? data
+    : Array.isArray(data?.data)
+      ? data.data
+      : [];
   return (
     <div className={className}>
       <Card className="mb-6">

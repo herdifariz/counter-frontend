@@ -1,6 +1,6 @@
 "use server";
 import DashboardLayout from "@/components/organisms/DashboardLayout";
-import QueueStatusChecker from "@/components/organisms/QueueStatusPage";
+import QueueStatusChecker from "@/components/pages/QueueStatusPage";
 
 export default async function QueueStatusPage() {
   return (

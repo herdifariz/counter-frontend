@@ -1,6 +1,6 @@
 "use server";
 import DashboardLayout from "@/components/organisms/DashboardLayout";
-import QueueTicketPage from "@/components/organisms/QueueTicketPage";
+import QueueTicketPage from "@/components/pages/QueueTicketPage";
 
 export default async function page() {
   return (
