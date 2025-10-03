@@ -1,8 +1,11 @@
+"use client";
 import Link from "next/link";
 import React from "react";
 import Card from "../atoms/Card";
+import { useGetMetrics } from "@/services/queue/wrapper.service";
 
 const DashboardPage = () => {
+  const { data: metrics, isLoading } = useGetMetrics();
   const quickLinks = [
     {
       title: "Ambil Nomor Antrian",
@@ -54,7 +57,9 @@ const DashboardPage = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-yellow-800 text-sm font-medium">Menunggu</p>
-                <h3 className="text-3xl font-bold text-yellow-900 mt-1">1</h3>
+                <h3 className="text-3xl font-bold text-yellow-900 mt-1">
+                  {metrics?.waiting || 0}
+                </h3>
               </div>
               <span className="material-symbols-outlined text-yellow-500 text-3xl">
                 timer
@@ -68,7 +73,9 @@ const DashboardPage = () => {
                 <p className="text-blue-800 text-sm font-medium">
                   Sedang Dilayani
                 </p>
-                <h3 className="text-3xl font-bold text-blue-900 mt-1">12</h3>
+                <h3 className="text-3xl font-bold text-blue-900 mt-1">
+                  {metrics?.called}{" "}
+                </h3>
               </div>
               <span className="material-symbols-outlined text-blue-500 text-3xl">
                 supervisor_account
@@ -80,7 +87,9 @@ const DashboardPage = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-green-800 text-sm font-medium">Selesai</p>
-                <h3 className="text-3xl font-bold text-green-900 mt-1">5</h3>
+                <h3 className="text-3xl font-bold text-green-900 mt-1">
+                  {metrics?.released}
+                </h3>
               </div>
               <span className="material-symbols-outlined text-green-500 text-3xl">
                 task_alt
@@ -92,7 +101,9 @@ const DashboardPage = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-red-800 text-sm font-medium">Dilewati</p>
-                <h3 className="text-3xl font-bold text-red-900 mt-1">4</h3>
+                <h3 className="text-3xl font-bold text-red-900 mt-1">
+                  {metrics?.skipped}
+                </h3>
               </div>
               <span className="material-symbols-outlined text-red-500 text-3xl">
                 skip_next

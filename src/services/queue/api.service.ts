@@ -18,14 +18,14 @@ import { errorMessage } from "@/utils/error.util";
 
 const API_BASE_URL = "/api/v1/queues";
 
-export const apiGetMetrics = async () => {
+export const apiGetMetrics = async (): Promise<IGetQueueMetricsResponse> => {
   try {
     const res = await satellite.get<APIBaseResponse<IGetQueueMetricsResponse>>(
       `${API_BASE_URL}/metrics`
     );
-    return res.data.data;
+    return res.data.data ?? { waiting: 0, called: 0, released: 0, skipped: 0 };
   } catch (error) {
-    return errorMessage<IGetQueueMetricsResponse>(error);
+    throw errorMessage(error);
   }
 };
 
@@ -72,9 +72,9 @@ export const apiSearchQueue = async (
     const res = await satellite.get<APIBaseResponse<IQueue[]>>(
       `${API_BASE_URL}/search?q=${queueNumberOrCounterNumber}`
     );
-    return res.data.data ?? []; // selalu array
+    return res.data.data ?? [];
   } catch (error) {
-    return []; // kalau error balikin array kosong
+    return [];
   }
 };
 

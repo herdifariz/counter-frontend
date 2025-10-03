@@ -1,14 +1,15 @@
 "use client";
-import { IQueue } from "@/interfaces/services/queue.interface";
 import React, { useState } from "react";
 import Button from "../atoms/Button";
 import Card from "../atoms/Card";
 import QueueCard from "../molecules/QueueCard";
-import ReleaseQueueForm from "../molecules/ReleaseQueueForm";
+import QueueForm from "../molecules/QueueForm";
 import {
-  useReleaseQueue,
   useSearchQueue,
+  useReleaseQueue,
 } from "@/services/queue/wrapper.service";
+import { IQueue } from "@/interfaces/services/queue.interface";
+import toast from "react-hot-toast";
 
 interface QueueStatusCheckerProps {
   className?: string;
@@ -18,40 +19,23 @@ const QueueStatusChecker: React.FC<QueueStatusCheckerProps> = ({
   className,
 }) => {
   const [queueNumber, setQueueNumber] = useState("");
-  const [queueDetails, setQueueDetails] = useState<IQueue | null>(null);
-  const [notFound, setNotFound] = useState(false);
 
-  const { mutate: releaseQueue } = useReleaseQueue();
-  const { refetch, isFetching } = useSearchQueue(queueNumber);
+  const { data: queueDetails = [], isFetching } = useSearchQueue(queueNumber);
+  const { mutate: releaseQueue, isPending: isReleasing } = useReleaseQueue();
 
-  const handleSubmit = async (data: { queueNumber: string }) => {
-    const value = data.queueNumber;
-    setQueueNumber(value);
-    if (!value) return;
-
-    const result = await refetch();
-    if (result.data && result.data.length > 0) {
-      setQueueDetails(result.data[0]);
-      setNotFound(false);
-    } else {
-      setQueueDetails(null);
-      setNotFound(true);
-    }
-
-    console.log("refetch result:", result.data);
+  const handleSubmit = (data: { queueNumber: string }) => {
+    setQueueNumber(data.queueNumber);
   };
 
-  const handleReleaseQueue = () => {
-    if (!queueDetails) return;
+  const handleReleaseQueue = (queue: IQueue) => {
     releaseQueue(
       {
-        queue_number: Number(queueDetails.queueNumber),
-        counter_id: Number(queueDetails.counter?.id),
+        queue_number: Number(queue.queueNumber),
+        counter_id: queue.counter.id,
       },
       {
-        onSuccess: () => {
-          setQueueDetails(null);
-          setNotFound(false);
+        onSuccess: (res) => {
+          toast("Success");
         },
       }
     );
@@ -67,29 +51,37 @@ const QueueStatusChecker: React.FC<QueueStatusCheckerProps> = ({
           Masukkan nomor antrian Anda untuk memeriksa status
         </p>
 
-        <ReleaseQueueForm onSubmit={handleSubmit} isLoading={isFetching} />
+        <QueueForm onSubmit={handleSubmit} isLoading={isFetching} />
       </Card>
 
-      {queueDetails ? (
+      {queueDetails.length > 0 ? (
         <div className="space-y-4">
-          <QueueCard queue={queueDetails} />
+          {queueDetails
+            .filter((queue) => queue.status !== "RELEASED") // ⬅️ filter di sini
+            .map((queue) => (
+              <div key={queue.id} className="space-y-2">
+                <QueueCard queue={queue} />
 
-          {queueDetails.status === "CLAIMED" && (
-            <Button
-              variant="danger"
-              fullWidth
-              onClick={handleReleaseQueue}
-              leftIcon={
-                <span className="material-symbols-outlined">exit_to_app</span>
-              }
-            >
-              Lepaskan Nomor Antrian
-            </Button>
-          )}
+                {queue.status === "CLAIMED" && (
+                  <Button
+                    variant="danger"
+                    fullWidth
+                    onClick={() => handleReleaseQueue(queue)}
+                    leftIcon={
+                      <span className="material-symbols-outlined">
+                        exit_to_app
+                      </span>
+                    }
+                  >
+                    Lepaskan Nomor Antrian
+                  </Button>
+                )}
+              </div>
+            ))}
         </div>
       ) : (
-        notFound &&
-        queueNumber && (
+        queueNumber &&
+        !isFetching && (
           <Card variant="outline" className="text-center py-6 text-gray-500">
             Nomor antrian <strong>{queueNumber}</strong> tidak ditemukan.
           </Card>

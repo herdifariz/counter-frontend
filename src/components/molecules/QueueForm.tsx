@@ -9,14 +9,18 @@ import {
   VReleaseQueueSchema,
 } from "@/schemas/counter.schema";
 
-interface ReleaseQueueFormProps {
+interface QueueFormProps {
   onSubmit: (data: { queueNumber: string }) => void;
   isLoading?: boolean;
+  buttonLabel?: string;
+  buttonVariant?: "primary" | "danger" | "secondary";
 }
 
-const ReleaseQueueForm: React.FC<ReleaseQueueFormProps> = ({
+const QueueForm: React.FC<QueueFormProps> = ({
   onSubmit,
   isLoading = false,
+  buttonLabel = "Cari", // default jadi "Cari"
+  buttonVariant = "primary", // default warna primary
 }) => {
   const {
     register,
@@ -44,16 +48,18 @@ const ReleaseQueueForm: React.FC<ReleaseQueueFormProps> = ({
           type="submit"
           isLoading={isLoading}
           disabled={isLoading}
-          variant="danger"
+          variant={buttonVariant}
           leftIcon={
-            <span className="material-symbols-outlined">exit_to_app</span>
+            <span className="material-symbols-outlined">
+              {buttonVariant === "danger" ? "exit_to_app" : "search"}
+            </span>
           }
         >
-          Lepaskan Antrian
+          {isLoading ? "Memproses..." : buttonLabel}
         </Button>
       </div>
     </form>
   );
 };
 
-export default ReleaseQueueForm;
+export default QueueForm;
