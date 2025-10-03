@@ -5,6 +5,10 @@ import Button from "../atoms/Button";
 import Card from "../atoms/Card";
 import QueueCard from "../molecules/QueueCard";
 import ReleaseQueueForm from "../molecules/ReleaseQueueForm";
+import {
+  useReleaseQueue,
+  useSearchQueue,
+} from "@/services/queue/wrapper.service";
 
 interface QueueStatusCheckerProps {
   className?: string;
@@ -17,9 +21,41 @@ const QueueStatusChecker: React.FC<QueueStatusCheckerProps> = ({
   const [queueDetails, setQueueDetails] = useState<IQueue | null>(null);
   const [notFound, setNotFound] = useState(false);
 
-  const handleSubmit = () => {};
+  const { mutate: releaseQueue } = useReleaseQueue();
+  const { refetch, isFetching } = useSearchQueue(queueNumber);
 
-  const handleReleaseQueue = () => {};
+  const handleSubmit = async (data: { queueNumber: string }) => {
+    const value = data.queueNumber;
+    setQueueNumber(value);
+    if (!value) return;
+
+    const result = await refetch();
+    if (result.data && result.data.length > 0) {
+      setQueueDetails(result.data[0]);
+      setNotFound(false);
+    } else {
+      setQueueDetails(null);
+      setNotFound(true);
+    }
+
+    console.log("refetch result:", result.data);
+  };
+
+  const handleReleaseQueue = () => {
+    if (!queueDetails) return;
+    releaseQueue(
+      {
+        queue_number: Number(queueDetails.queueNumber),
+        counter_id: Number(queueDetails.counter?.id),
+      },
+      {
+        onSuccess: () => {
+          setQueueDetails(null);
+          setNotFound(false);
+        },
+      }
+    );
+  };
 
   return (
     <div className={className}>
@@ -31,7 +67,7 @@ const QueueStatusChecker: React.FC<QueueStatusCheckerProps> = ({
           Masukkan nomor antrian Anda untuk memeriksa status
         </p>
 
-        <ReleaseQueueForm onSubmit={handleSubmit} isLoading={false} />
+        <ReleaseQueueForm onSubmit={handleSubmit} isLoading={isFetching} />
       </Card>
 
       {queueDetails ? (

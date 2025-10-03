@@ -1,25 +1,69 @@
 "use client";
 import { ICounter } from "@/interfaces/services/counter.interface";
 import { IQueue } from "@/interfaces/services/queue.interface";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Button from "../atoms/Button";
 import Card from "../atoms/Card";
 import Select from "../atoms/Select";
 import CurrentQueueDisplay from "../molecules/CurrentQueueDisplay";
+import {
+  useGetCurrentQueues,
+  useSkipQueue,
+  useNextQueue,
+} from "@/services/queue/wrapper.service";
+import { useGetAllCounters } from "@/services/counter/wrapper.service";
 
 interface CounterOperatorProps {
   className?: string;
 }
 
 const CounterOperator: React.FC<CounterOperatorProps> = ({ className }) => {
-  const selectedCounter: ICounter | null = null;
-  const currentQueue: IQueue | null = null;
-  const activeCounters: ICounter[] = [];
-  const handleCounterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {};
+  // const selectedCounter: ICounter | null = null;
+  // const currentQueue: IQueue | null = null;
+  // const activeCounters: ICounter[] = [];
 
-  const handleNextQueue = () => {};
+  const [selectedCounter, setSelectedCounter] = useState<ICounter | null>(null);
+  const [currentQueue, setCurrentQueue] = useState<IQueue | null>(null);
 
-  const handleSkipQueue = () => {};
+  const { mutate: nextQueue, isPending: nextLoading } = useNextQueue();
+  const { mutate: skipQueue, isPending: skipLoading } = useSkipQueue();
+
+  // Ambil semua counter aktif
+  const { data: countersRes } = useGetAllCounters();
+  const activeCounters: ICounter[] = countersRes?.data || [];
+
+  const { data: queuesRes, refetch } = useGetCurrentQueues();
+  const queueList: IQueue[] = queuesRes || [];
+
+  const handleCounterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const counterId = Number(e.target.value);
+    const counter = activeCounters.find((c) => c.id === counterId) || null;
+    setSelectedCounter(counter);
+  };
+
+  const handleNextQueue = () => {
+    if (!selectedCounter) return;
+    nextQueue(
+      { counter_id: selectedCounter.id },
+      {
+        onSuccess: () => {
+          refetch();
+        },
+      }
+    );
+  };
+
+  const handleSkipQueue = () => {
+    if (!selectedCounter) return;
+    skipQueue(
+      { counter_id: selectedCounter.id },
+      {
+        onSuccess: () => {
+          refetch();
+        },
+      }
+    );
+  };
 
   return (
     <div className={className}>
@@ -42,7 +86,7 @@ const CounterOperator: React.FC<CounterOperatorProps> = ({ className }) => {
               disabled: false,
             })),
           ]}
-          value={""}
+          value={selectedCounter?.id?.toString() || ""}
           onChange={handleCounterChange}
         />
       </Card>
@@ -50,8 +94,8 @@ const CounterOperator: React.FC<CounterOperatorProps> = ({ className }) => {
       {selectedCounter ? (
         <div className="space-y-6">
           <CurrentQueueDisplay
-            counterName={""}
-            queueNumber={1}
+            counterName={selectedCounter.name}
+            queueNumber={selectedCounter.currentQueue}
             status={"CLAIMED"}
           />
 

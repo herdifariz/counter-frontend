@@ -65,14 +65,16 @@ export const apiGetCurrentQueues = async () => {
   }
 };
 
-export const apiSearchQueue = async (queueNumberOrCounterNumber: string) => {
+export const apiSearchQueue = async (
+  queueNumberOrCounterNumber: string
+): Promise<IQueue[]> => {
   try {
     const res = await satellite.get<APIBaseResponse<IQueue[]>>(
       `${API_BASE_URL}/search?q=${queueNumberOrCounterNumber}`
     );
-    return res.data.data;
+    return res.data.data ?? []; // selalu array
   } catch (error) {
-    return errorMessage<IQueue[]>(error);
+    return []; // kalau error balikin array kosong
   }
 };
 

@@ -13,8 +13,8 @@ import {
   useCreateCounter,
   useGetAllCounters,
   useUpdateCounter,
+  useDeleteCounter,
 } from "@/services/counter/wrapper.service";
-import { log } from "node:console";
 
 interface CounterManagerProps {
   className?: string;
@@ -27,6 +27,7 @@ const CounterManager: React.FC<CounterManagerProps> = ({ className }) => {
 
   const { mutateAsync: createCounter } = useCreateCounter();
   const { mutateAsync: updateCounter } = useUpdateCounter();
+  const { mutateAsync: deleteCounter } = useDeleteCounter();
   // const counterList: ICounter[] = [];
   const {
     data: counterList,
@@ -73,7 +74,16 @@ const CounterManager: React.FC<CounterManagerProps> = ({ className }) => {
     }
   };
 
-  const handleDeleteCounter = () => {};
+  const handleDeleteCounter = () => {
+    if (selectedCounter) {
+      deleteCounter(selectedCounter.id, {
+        onSuccess: () => {
+          setSelectedCounter(null);
+          refetchCounter();
+        },
+      });
+    }
+  };
 
   return (
     <div className={className}>

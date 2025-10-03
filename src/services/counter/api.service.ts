@@ -51,3 +51,14 @@ export const apiUpdateCounter = async (data: IUpdateCounterRequest) => {
     return errorMessage<ICounter>(error);
   }
 };
+
+export const apiDeleteCounter = async (id: number) => {
+  try {
+    const res = await satellite.delete<APIBaseResponse<{ success: boolean }>>(
+      `${API_BASE_URL}/${id}`
+    );
+    return res.data;
+  } catch (error) {
+    return errorMessage<{ success: boolean }>(error);
+  }
+};

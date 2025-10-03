@@ -2,6 +2,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   apiCreateCounter,
+  apiDeleteCounter,
   apiGetAllCounters,
   apiUpdateCounter,
 } from "./api.service";
@@ -64,6 +65,27 @@ export const useUpdateCounter = () => {
     },
     onError: (error) => {
       toast.error(error?.message || "Failed to update counter");
+    },
+  });
+};
+
+export const useDeleteCounter = () => {
+  return useMutation({
+    mutationFn: (id: number) => apiDeleteCounter(id),
+    onSuccess: (response) => {
+      if (response && response.error) {
+        toast.error(response.error.message || "Failed to delete admin");
+        return;
+      }
+
+      if (response && response.status === true) {
+        toast.success("Admin deleted successfully");
+      } else {
+        toast.error(response?.message || "Failed to delete admin");
+      }
+    },
+    onError: (error) => {
+      toast.error(error?.message || "Failed to delete admin");
     },
   });
 };
