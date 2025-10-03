@@ -37,6 +37,7 @@ const QueueStatusChecker: React.FC<QueueStatusCheckerProps> = ({
   };
 
   const handleReleaseQueue = (queue: IQueue) => {
+    if (!queue.counter) return;
     releaseQueue({
       queue_number: Number(queue.queueNumber),
       counter_id: queue.counter.id,

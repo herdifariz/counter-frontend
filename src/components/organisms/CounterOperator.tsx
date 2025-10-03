@@ -28,10 +28,10 @@ const CounterOperator: React.FC<CounterOperatorProps> = ({ className }) => {
 
   const nextQueueMutation = useNextQueue();
   const skipQueueMutation = useSkipQueue();
-  const resetQueuesMutation = useResetQueues();
 
-  const activeCounters: ICounter[] =
-    countersData?.data?.filter((counter) => counter.isActive) || [];
+  const activeCounters: ICounter[] = React.useMemo(() => {
+    return countersData?.data?.filter((counter) => counter.isActive) || [];
+  }, [countersData]);
 
   const selectedCounter: ICounter | null =
     activeCounters.find(
@@ -132,7 +132,6 @@ const CounterOperator: React.FC<CounterOperatorProps> = ({ className }) => {
 
       {selectedCounter ? (
         <div className="space-y-6">
-          {/* Current Queue Display */}
           {currentQueueInfo && (
             <CurrentQueueDisplay
               counterName={selectedCounter.name}
@@ -141,7 +140,6 @@ const CounterOperator: React.FC<CounterOperatorProps> = ({ className }) => {
             />
           )}
 
-          {/* Queue Status Info */}
           {isLoadingQueues ? (
             <Card className="text-center py-4">
               <span className="text-gray-500 text-sm">

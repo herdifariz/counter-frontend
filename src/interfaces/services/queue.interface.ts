@@ -50,6 +50,7 @@ export interface ICurrentQueuesResponse {
   id: number;
   isActive: boolean;
   name: string;
+  maxQueue: number;
   currentQueue: number;
   status: EQueueStatus;
 }
