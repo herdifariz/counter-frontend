@@ -5,7 +5,7 @@ import {
   IResetQueuesRequest,
   ISkipQueueRequest,
 } from "@/interfaces/services/queue.interface";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import {
   apiClaimQueue,
@@ -45,6 +45,7 @@ export const useSearchQueue = (query: string) => {
   return useQuery({
     queryKey: QUEUE_KEYS.search(query),
     queryFn: () => apiSearchQueue(query),
+    enabled: !!query,
     refetchInterval: 30000,
     refetchOnWindowFocus: false,
   });
@@ -85,9 +86,11 @@ export const useClaimQueue = () => {
 };
 
 export const useReleaseQueue = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (data: IReleaseQueueRequest) => apiReleaseQueue(data),
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
       const toastId = toast.loading("Memproses permintaan...", {
         duration: 5000,
       });
@@ -100,6 +103,13 @@ export const useReleaseQueue = () => {
 
       if (response && "status" in response && response.status === true) {
         toast.success("Nomor antrian berhasil dilepaskan", { id: toastId });
+
+        queryClient.invalidateQueries({
+          queryKey: QUEUE_KEYS.search(String(variables.queue_number)),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUEUE_KEYS.current,
+        });
       } else {
         if (
           response &&

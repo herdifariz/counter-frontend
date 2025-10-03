@@ -7,17 +7,17 @@ import {
   ICreateCounterRequest,
   IUpdateCounterRequest,
 } from "@/interfaces/services/counter.interface";
-import { setToken } from "@/utils/cookie.util";
 import { errorMessage } from "@/utils/error.util";
-import { cookies } from "next/headers";
-import { redirect, RedirectType } from "next/navigation";
 
 const API_BASE_URL = "/api/v1/counters";
 
-export const apiGetAllCounters = async () => {
+export const apiGetAllCounters = async (include_inactive: boolean = false) => {
   try {
     const res = await satellite.get<APIBaseResponse<ICounter[]>>(
-      `${API_BASE_URL}/`
+      `${API_BASE_URL}/`,
+      {
+        params: { include_inactive },
+      }
     );
     return res.data;
   } catch (error) {

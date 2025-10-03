@@ -4,7 +4,7 @@ import {
   ICreateCounterRequest,
   IUpdateCounterRequest,
 } from "@/interfaces/services/counter.interface";
-import React, { use, useState } from "react";
+import React, { useState } from "react";
 import Button from "../atoms/Button";
 import Card from "../atoms/Card";
 import CounterCard from "../molecules/CounterCard";
@@ -29,11 +29,8 @@ const CounterManager: React.FC<CounterManagerProps> = ({ className }) => {
   const { mutateAsync: updateCounter } = useUpdateCounter();
   const { mutateAsync: deleteCounter } = useDeleteCounter();
   // const counterList: ICounter[] = [];
-  const {
-    data: counterList,
-    isLoading,
-    refetch: refetchCounter,
-  } = useGetAllCounters();
+  const { data: counterList, refetch: refetchCounter } =
+    useGetAllCounters(true);
 
   const handleSubmit = (
     data: ICreateCounterRequest | IUpdateCounterRequest

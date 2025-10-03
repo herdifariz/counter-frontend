@@ -36,7 +36,7 @@ export const apiClaimQueue = async (): Promise<
     const res = await satellite.post<APIBaseResponse<IClaimQueueResponse>>(
       `${API_BASE_URL}/claim`
     );
-    return res.data; // <- langsung full response (status, message, data)
+    return res.data;
   } catch (error) {
     return errorMessage<IClaimQueueResponse>(error);
   }

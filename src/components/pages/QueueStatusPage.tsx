@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "../atoms/Button";
 import Card from "../atoms/Card";
 import QueueCard from "../molecules/QueueCard";
@@ -9,7 +9,6 @@ import {
   useReleaseQueue,
 } from "@/services/queue/wrapper.service";
 import { IQueue } from "@/interfaces/services/queue.interface";
-import toast from "react-hot-toast";
 
 interface QueueStatusCheckerProps {
   className?: string;
@@ -20,25 +19,28 @@ const QueueStatusChecker: React.FC<QueueStatusCheckerProps> = ({
 }) => {
   const [queueNumber, setQueueNumber] = useState("");
 
-  const { data: queueDetails = [], isFetching } = useSearchQueue(queueNumber);
-  const { mutate: releaseQueue, isPending: isReleasing } = useReleaseQueue();
+  const {
+    data: queueDetails = [],
+    isFetching,
+    refetch,
+  } = useSearchQueue(queueNumber);
+  const { mutate: releaseQueue, isSuccess } = useReleaseQueue();
+
+  useEffect(() => {
+    if (isSuccess) {
+      refetch();
+    }
+  }, [isSuccess, refetch]);
 
   const handleSubmit = (data: { queueNumber: string }) => {
     setQueueNumber(data.queueNumber);
   };
 
   const handleReleaseQueue = (queue: IQueue) => {
-    releaseQueue(
-      {
-        queue_number: Number(queue.queueNumber),
-        counter_id: queue.counter.id,
-      },
-      {
-        onSuccess: (res) => {
-          toast("Success");
-        },
-      }
-    );
+    releaseQueue({
+      queue_number: Number(queue.queueNumber),
+      counter_id: queue.counter.id,
+    });
   };
 
   return (
@@ -57,7 +59,7 @@ const QueueStatusChecker: React.FC<QueueStatusCheckerProps> = ({
       {queueDetails.length > 0 ? (
         <div className="space-y-4">
           {queueDetails
-            .filter((queue) => queue.status !== "RELEASED") // ⬅️ filter di sini
+            .filter((queue) => queue.status !== "RELEASED")
             .map((queue) => (
               <div key={queue.id} className="space-y-2">
                 <QueueCard queue={queue} />

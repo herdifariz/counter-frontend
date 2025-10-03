@@ -9,39 +9,8 @@ interface QueueDisplayBoardProps {
   className?: string;
 }
 
-// const counters: ICurrentQueuesResponse[] = [
-//   {
-//     id: 1,
-//     isActive: true,
-//     name: "Counter 1",
-//     currentQueue: 5,
-//     status: "CLAIMED",
-//   },
-//   {
-//     id: 2,
-//     isActive: true,
-//     name: "Counter 2",
-//     currentQueue: 8,
-//     status: "CALLED",
-//   },
-//   {
-//     id: 3,
-//     isActive: false,
-//     name: "Counter 3",
-//     currentQueue: 0,
-//     status: "RELEASED",
-//   },
-//   {
-//     id: 4,
-//     isActive: true,
-//     name: "Counter 4",
-//     currentQueue: 12,
-//     status: "SERVED",
-//   },
-// ];
-
 const QueueDisplayPage: React.FC<QueueDisplayBoardProps> = ({ className }) => {
-  const { data, isLoading, isError } = useGetCurrentQueues();
+  const { data } = useGetCurrentQueues();
   const counters = Array.isArray(data)
     ? data
     : Array.isArray(data?.data)

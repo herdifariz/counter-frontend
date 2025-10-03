@@ -8,8 +8,6 @@ import {
 } from "./api.service";
 import {
   ICreateCounterRequest,
-  ICounter,
-  ICounterResponse,
   IUpdateCounterRequest,
 } from "@/interfaces/services/counter.interface";
 import toast from "react-hot-toast";
@@ -19,10 +17,10 @@ const COUNTER_KEYS = {
   byId: (id: number) => ["counters", id] as const,
 };
 
-export const useGetAllCounters = () => {
+export const useGetAllCounters = (include_inactive: boolean = false) => {
   return useQuery({
-    queryKey: [COUNTER_KEYS.all],
-    queryFn: () => apiGetAllCounters(),
+    queryKey: [COUNTER_KEYS.all, include_inactive],
+    queryFn: () => apiGetAllCounters(include_inactive),
     refetchOnWindowFocus: false,
   });
 };
