@@ -28,6 +28,7 @@ const CounterOperator: React.FC<CounterOperatorProps> = ({ className }) => {
 
   const nextQueueMutation = useNextQueue();
   const skipQueueMutation = useSkipQueue();
+  const resetQueuesMutation = useResetQueues();
 
   const activeCounters: ICounter[] = React.useMemo(() => {
     return countersData?.data?.filter((counter) => counter.isActive) || [];
@@ -198,7 +199,6 @@ const CounterOperator: React.FC<CounterOperatorProps> = ({ className }) => {
             </Card>
           )}
 
-          {/* Action Buttons */}
           <div className="flex gap-4">
             <Button
               fullWidth
@@ -230,7 +230,7 @@ const CounterOperator: React.FC<CounterOperatorProps> = ({ className }) => {
                 Lewati Antrian
               </Button>
             )}
-            {/* <Button
+            <Button
               fullWidth
               variant="danger"
               leftIcon={
@@ -244,11 +244,10 @@ const CounterOperator: React.FC<CounterOperatorProps> = ({ className }) => {
               disabled={resetQueuesMutation.isPending}
             >
               Reset Antrian
-            </Button> */}
+            </Button>
           </div>
         </div>
       ) : (
-        // No Counter Selected State
         <Card variant="outline" className="text-center py-12 text-gray-500">
           <span className="material-symbols-outlined text-6xl text-gray-300 mb-4">
             desk

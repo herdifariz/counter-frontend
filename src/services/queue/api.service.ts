@@ -74,6 +74,7 @@ export const apiSearchQueue = async (
     );
     return res.data.data ?? [];
   } catch (error) {
+    console.log(error);
     return [];
   }
 };
