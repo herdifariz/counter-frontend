@@ -79,37 +79,34 @@ export const apiSearchQueue = async (
   }
 };
 
-export const apiNextQueue = async (data: INextQueueRequest) => {
+export const apiNextQueue = async (
+  data: INextQueueRequest
+): Promise<APIBaseResponse<INextQueueResponse>> => {
   try {
-    const res = await satellite.post<APIBaseResponse<INextQueueResponse>>(
-      `${API_BASE_URL}/next`,
-      data
-    );
-    return res.data.data;
+    const res = await satellite.post(`${API_BASE_URL}/next`, data);
+    return res.data;
   } catch (error) {
     return errorMessage<INextQueueResponse>(error);
   }
 };
 
-export const apiSkipQueue = async (data: ISkipQueueRequest) => {
+export const apiSkipQueue = async (
+  data: ISkipQueueRequest
+): Promise<APIBaseResponse<ISkipQueueResponse>> => {
   try {
-    const res = await satellite.post<APIBaseResponse<ISkipQueueResponse>>(
-      `${API_BASE_URL}/skip`,
-      data
-    );
-    return res.data.data;
+    const res = await satellite.post(`${API_BASE_URL}/skip`, data);
+    return res.data;
   } catch (error) {
     return errorMessage<ISkipQueueResponse>(error);
   }
 };
 
-export const apiResetQueues = async (data: IResetQueuesRequest) => {
+export const apiResetQueues = async (
+  data: IResetQueuesRequest
+): Promise<APIBaseResponse<IResetQueuesResponse>> => {
   try {
-    const res = await satellite.post<APIBaseResponse<IResetQueuesResponse>>(
-      `${API_BASE_URL}/reset`,
-      data
-    );
-    return res.data.data;
+    const res = await satellite.post(`${API_BASE_URL}/reset`, data);
+    return res.data;
   } catch (error) {
     return errorMessage<IResetQueuesResponse>(error);
   }

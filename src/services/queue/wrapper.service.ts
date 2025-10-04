@@ -129,103 +129,85 @@ export const useReleaseQueue = () => {
 };
 
 export const useNextQueue = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: INextQueueRequest) => apiNextQueue(data),
     onSuccess: (response) => {
       const toastId = toast.loading("Memproses permintaan...", {
         duration: 5000,
       });
-      if (response && "error" in response && response.error) {
-        toast.error(response.error.message || "Failed to process next queue", {
+
+      if (response?.status) {
+        toast.success(
+          response.message || "Berhasil memproses antrian berikutnya",
+          {
+            id: toastId,
+          }
+        );
+        queryClient.invalidateQueries({ queryKey: ["queues", "current"] });
+        queryClient.invalidateQueries({ queryKey: ["counters"] });
+      } else {
+        toast.error(response?.message || "Gagal memproses antrian berikutnya", {
           id: toastId,
         });
-        return;
-      }
-
-      if (response && "status" in response && response.status === true) {
-        toast.success("Berhasil memproses antrian berikutnya", { id: toastId });
-      } else {
-        if (
-          response &&
-          "message" in response &&
-          typeof response.message === "string"
-        ) {
-          toast.error(response.message, { id: toastId });
-        } else {
-          toast.error("Failed to process next queue", { id: toastId });
-        }
       }
     },
     onError: (error) => {
-      toast.error(error?.message || "Failed to process next queue");
+      toast.error(error?.message || "Gagal memproses antrian berikutnya");
     },
   });
 };
 
 export const useSkipQueue = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: ISkipQueueRequest) => apiSkipQueue(data),
     onSuccess: (response) => {
       const toastId = toast.loading("Memproses permintaan...", {
         duration: 5000,
       });
-      if (response && "error" in response && response.error) {
-        toast.error(response.error.message || "Failed to skip queue", {
+
+      if (response?.status) {
+        toast.success(response.message || "Berhasil melewati antrian", {
           id: toastId,
         });
-        return;
-      }
-
-      if (response && "status" in response && response.status === true) {
-        toast.success("Berhasil melewati antrian", { id: toastId });
+        queryClient.invalidateQueries({ queryKey: ["queues", "current"] });
+        queryClient.invalidateQueries({ queryKey: ["counters"] });
       } else {
-        if (
-          response &&
-          "message" in response &&
-          typeof response.message === "string"
-        ) {
-          toast.error(response.message, { id: toastId });
-        } else {
-          toast.error("Failed to skip queue", { id: toastId });
-        }
+        toast.error(response?.message || "Gagal melewati antrian", {
+          id: toastId,
+        });
       }
     },
     onError: (error) => {
-      toast.error(error?.message || "Failed to skip queue");
+      toast.error(error?.message || "Gagal melewati antrian");
     },
   });
 };
 
 export const useResetQueues = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: IResetQueuesRequest) => apiResetQueues(data),
     onSuccess: (response) => {
-      const toastId = toast.loading("Memproses permintaan...", {
+      const toastId = toast.loading("Memproses reset antrian...", {
         duration: 5000,
       });
-      if (response && "error" in response && response?.error) {
-        toast.error(response.error.message || "Failed to reset queues", {
+
+      if (response?.status) {
+        toast.success(response.message || "Berhasil mereset antrian", {
           id: toastId,
         });
-        return;
-      }
-
-      if (response && "status" in response && response.status === true) {
-        toast.success("Berhasil mereset antrian", { id: toastId });
+        queryClient.invalidateQueries({ queryKey: ["queues", "current"] });
+        queryClient.invalidateQueries({ queryKey: ["counters"] });
       } else {
-        if (
-          response &&
-          "message" in response &&
-          typeof response.message === "string"
-        ) {
-          toast.error(response.message, { id: toastId });
-        } else {
-          toast.error("Failed to reset queue", { id: toastId });
-        }
+        toast.error(response?.message || "Gagal mereset antrian", {
+          id: toastId,
+        });
       }
     },
     onError: (error) => {
-      toast.error(error?.message || "Failed to reset queues");
+      toast.error(error?.message || "Gagal mereset antrian");
     },
   });
 };
